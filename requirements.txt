@@ -1,0 +1,30 @@
+# Core deep learning
+torch==2.1.0
+torchvision==0.16.0
+timm==1.0.22
+
+# Scientific stack
+numpy==1.26.4
+pandas==2.3.3
+scipy==1.13.1
+scikit-learn==1.6.1
+scikit-image==0.24.0
+matplotlib==3.9.4
+tqdm==4.67.1
+Pillow==11.3.0
+
+# Imaging and registration
+opencv-python==4.11.0.86
+SimpleITK==2.5.3
+nibabel==5.3.3
+
+# Single-cell and spatial transcriptomics
+scanpy==1.10.3
+anndata==0.10.8
+mygene==3.2.2
+pybiomart==0.2.0
+
+# Foundation models (not on PyPI; install from each project's source):
+#   CONCH    pathology vision foundation model
+#   scGPT    single-cell foundation model
+#   xFeat    keypoint matcher used in slide registration
