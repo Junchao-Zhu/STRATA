@@ -2,8 +2,7 @@
 
 A reinforcement-driven active sampling framework that reconstructs dense 3D
 tissue-level transcriptomic maps from a small set of strategically sampled
-voxel-wise ST acquisitions. The example configuration in
-this repository targets the HER2 dataset.
+voxel-wise ST acquisitions. 
 
 ## Repository layout
 
