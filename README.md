@@ -30,15 +30,13 @@ bash STRATA_Sampler/run_st.sh
 
 ## Pipeline
 
-**1. Preprocess ST and SC data**
-
-**2. Register adjacent slides and build the 3D graph** (`Registration_and_3D_graph/`)
+**1. Register adjacent slides and build the 3D graph** (`Registration_and_3D_graph/`)
 
 - `registration/Step0..Step3*`, xFeat affine init followed by ANTs nonrigid
 - Per-spot CONCH features, pairwise IoU and feature similarity, k-NN graph
   with intra-slice and cross-slice edges (output: `3d_map/{patient}.npz`)
 
-**3. Train the triple-branch predictor** (`STRATA_Tri_network/`)
+**2. Train the triple-branch predictor** (`STRATA_Tri_network/`)
 
 - Joint training of retrieval (DenseNet-121 + BLEEP), regression (ViT-B with
   CONCH weights), and parameter-free 3D interpolation
@@ -46,7 +44,7 @@ bash STRATA_Sampler/run_st.sh
 - Reported metrics: `3d_only` plus fused `V1_2param`, `V3_pergene_gate`,
   `V4_gate_mlp` at `top_k=25`
 
-**4. Active sampling with online RL** (`STRATA_Sampler/`)
+**3. Active sampling with online RL** (`STRATA_Sampler/`)
 
 - Build SC prototypes and CONCH feature cache
 - Pointer-decoder policy with online REINFORCE + HER replay; the trained
