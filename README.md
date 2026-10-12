@@ -41,8 +41,7 @@ bash STRATA_Sampler/run_st.sh
 - Joint training of retrieval (DenseNet-121 + BLEEP), regression (ViT-B with
   CONCH weights), and parameter-free 3D interpolation
 - Fusion variants V1 / V3 / V4 trained on cached predictions
-- Reported metrics: `3d_only` plus fused `V1_2param`, `V3_pergene_gate`,
-  `V4_gate_mlp` at `top_k=25`
+- Reported metrics: `3d_only` plus fused `V1_2param` at `top_k=25`
 
 **3. Active sampling with online RL** (`STRATA_Sampler/`)
 
