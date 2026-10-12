@@ -8,13 +8,10 @@ this repository targets the HER2 dataset.
 ## Repository layout
 
 ```
-clean_code/
-  st_preprocess/              ST h5ad -> per-spot HVG expression
-  sc_preprocess/              SC reference, gene mapping, scGPT embedding, cell-type assignment
+STRATA/
   Registration_and_3D_graph/  Slide-to-slide affine + ANTs registration, 3D spot graph
   STRATA_Tri_network/         Triple-branch predictor (retrieval / regression / 3D interp)
   STRATA_Sampler/             Active-sampling pipeline (online RL with the predictor)
-  example_data/               Minimal HER2 example: Patient_A and its 3D map
   requirements.txt            Python dependencies
 ```
 
@@ -34,11 +31,7 @@ bash STRATA_Sampler/run_st.sh
 
 ## Pipeline
 
-**1. Preprocess ST and SC data** (`st_preprocess/`, `sc_preprocess/`)
-
-- HVG selection from h5ad, gene-name mapping, gene-set overlap and filtering,
-  data assembly into `.npy` records
-- scGPT embedding for SC reference, cluster prototypes, cell-type assignment
+**1. Preprocess ST and SC data**
 
 **2. Register adjacent slides and build the 3D graph** (`Registration_and_3D_graph/`)
 
@@ -72,12 +65,6 @@ All paths are read from environment variables with safe relative defaults
 | `GRAPH_ROOT`  | 3D spot-graph npz directory                   |
 | `CONCH_CKPT`  | CONCH ViT-B/16 checkpoint path                |
 | `SCGPT_CKPT`  | scGPT checkpoint directory                    |
-| `ST_NET_DIR`  | Optional, external ST-Net repo for the sampler|
-
-## Example data
-
-`example_data/HER2/Patient_A` contains 6 slides (`SPA149`-`SPA154`, ~2065
-spots) plus the matching 3D-map npz for a smoke test.
 
 ## Requirements
 
