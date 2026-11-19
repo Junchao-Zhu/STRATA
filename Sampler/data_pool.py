@@ -78,12 +78,6 @@ def build_candidate_pool(
     val_files: List[str],     # absolute paths to the held-out slides (used for test_proximity only)
     data_root: str = os.environ.get("DATA_ROOT", "./data/data_infor"),
 ) -> CandidatePool:
-    """Build the per-fold candidate pool.
-
-    `train_files` is the agent's action universe (every spot it may pick).
-    `val_files` is *not* in the pool but its spot positions are used to
-    precompute `test_proximity` for every candidate spot.
-    """
     #  1. Group train files by patient, in slice_names order matching 3d_map
     train_by_patient: Dict[str, List[str]] = {}
     val_by_patient: Dict[str, List[str]] = {}
@@ -192,10 +186,6 @@ def build_candidate_pool(
 
     patient_to_int = {p: i for i, p in enumerate(sorted(set(r["patient"] for r in pool_records)))}
 
-    #  load CONCH per-slide feature caches (see extract_conch.py).
-    # `vision` is the ONLY pre-sampling image feature we use; sc_embed is
-    # a scGPT embedding of expression and leaks - do NOT load it into state.
-    # mol_embed / cell_type remain post-sampling revelations.
     conch_cache: Dict[Tuple[str, str], np.ndarray] = {}
     missing_conch: List[str] = []
     for r in pool_records:
@@ -268,10 +258,6 @@ def build_candidate_pool(
             m[in_patient_arr[patient]] = True
         pool_mask_in_patient[patient] = m
 
-    #  7. Pre-sampling 3D neighborhood aggregates (v3)
-    #  For each pool spot, average the CONCH features of its intra-slice
-    #  and cross-slice neighbors that are ALSO in the pool. Uses only H&E
-    #  (frozen CONCH) and the pre-known 3D graph - no expression touched.
     intra_agg = np.zeros((N, 512), dtype=np.float32)
     cross_agg = np.zeros((N, 512), dtype=np.float32)
 

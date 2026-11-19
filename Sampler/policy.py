@@ -9,11 +9,6 @@ import torch.nn.functional as F
 
 # 
 class FrozenStaticProjector(nn.Module):
-    """Random-init Linear from the 1542-d frozen block to `hidden`.
-
-    Not trained; acts as a fixed random projection so downstream sizes are
-    small and consistent. A tanh caps activation magnitudes.
-    """
     def __init__(self, in_dim: int = 1542, hidden: int = 128):
         super().__init__()
         self.proj = nn.Linear(in_dim, hidden)
@@ -27,20 +22,6 @@ class FrozenStaticProjector(nn.Module):
 
 # 
 class PointerDecoderPolicy(nn.Module):
-    """Pointer-style scoring with trajectory memory.
-
-    Input pieces are packed as-is at each forward; we intentionally do not
-    concatenate once and cache because `cell_prior` / `h_ctx` change between
-    rollout steps.
-
-    Args:
-        h_static_dim: dim of projected frozen block (typical 128)
-        cell_prior_dim: K clusters from CellHead (typical 128)
-        dyn_dim: dim of per-spot live dynamic features (cross_red + is_sampled
-                 + budget + own_cell_type(C) + own_mol_embed(512) + observed)
-        h_ctx_dim: dim of trajectory context vector (= h_static_dim)
-        hidden: scorer MLP hidden size
-    """
     def __init__(
         self,
         h_static_dim: int = 128,

@@ -12,20 +12,6 @@ from predictor import STNetPredictor
 from sc_bank import SCBank
 
 
-# 
-# State feature layout (per candidate spot):
-#   [ vision(512)              0:512
-#     xyz(4)                   512:516
-#     test_proximity(1)        516
-#     same_patient_flag(1)     517
-#     is_sampled(1)            518
-#     budget_left(1)           519
-#     own_cell_type(C) | mask  520:520+C
-#     own_mol_embed(512)|mask  520+C:520+C+512
-#     observed_flag(1)         end
-#   ]
-# 
-
 
 def state_feature_dim(cell_type_dim: int) -> int:
     return 512 + 4 + 1 + 1 + 1 + 1 + cell_type_dim + 512 + 1

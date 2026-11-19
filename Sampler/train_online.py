@@ -75,11 +75,6 @@ def masked_softmax_sample(
     k: int,
     deterministic: bool,
 ) -> Tuple[List[int], List[torch.Tensor], List[torch.Tensor]]:
-    """Sequentially pick k spots without replacement.
-
-    After each pick, we mask that spot out and re-score. The policy's
-    `selected_mask` input reflects the *accumulated* picks for context.
-    """
     acts: List[int] = []
     logps: List[torch.Tensor] = []
     ents: List[torch.Tensor] = []
@@ -114,14 +109,6 @@ def masked_softmax_sample(
 # 3D cross-slice redundancy tracker
 # 
 def build_pool_cross_neighbors(pool) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """For each pool spot, list its cross-slice neighbors as pool indices.
-
-    Returns three arrays:
-      nb_ptr  : (N+1,)  int64 - CSR offsets into nb_idx / nb_w
-      nb_idx  : (E,)    int64 - pool indices of cross-slice neighbors
-      nb_w    : (E,)    float32 - corresponding cross weights
-    Only neighbors that are themselves in the pool are kept.
-    """
     N = pool.n_pool
     # inverse map: (patient, in_patient_idx) -> pool_global_idx
     inv_map: dict = {}
@@ -165,9 +152,6 @@ def apply_cross_redundancy_update(
     nb_ptr: np.ndarray, nb_idx: np.ndarray, nb_w: np.ndarray,
     new_pick: int,
 ):
-    """When `new_pick` joins the selected set, add its cross-edge weights to
-    every one of its neighbors' running redundancy score.
-    """
     s = int(nb_ptr[new_pick]); e = int(nb_ptr[new_pick + 1])
     if e > s:
         cross_red[nb_idx[s:e]] += nb_w[s:e]
@@ -184,14 +168,6 @@ def build_dyn_tensor(
     N: int,
     device: str,
 ) -> torch.Tensor:
-    """Assemble the live dynamic block as a (N, dyn_dim) float32 tensor.
-
-    Layout (matches state_builder.dynamic_block_dim ordering):
-      cross_red_norm(1) | is_sampled(1) | budget(1) | own_cell_type(C)
-      | own_mol_embed(512) | observed_flag(1)
-    Note: `cell_prior` is passed SEPARATELY to the policy, not concatenated
-    here, because it's a live tensor produced by CellHead on device.
-    """
     cr_max = float(cross_red.max()) if cross_red.size > 0 else 0.0
     cr_scale = max(cr_max, 1e-3)
     cr_norm = (cross_red / cr_scale).astype(np.float32)[:, None]
@@ -226,10 +202,6 @@ def rollout_no_grad(
     patient_quota_remaining: dict = None,
     patient_spots: dict = None,
 ) -> List[int]:
-    """Sequentially pick k spots. Updates internal h_ctx but does NOT persist it.
-
-    The trajectory memory `h_ctx` is reconstructed during HER replay.
-    """
     acts: List[int] = []
     cur_cand = candidate_mask.clone()
     quota_rem = dict(patient_quota_remaining) if patient_quota_remaining is not None else None
@@ -275,15 +247,6 @@ def update_policy_her_replay(
     nb_idx: np.ndarray = None,
     nb_w: np.ndarray = None,
 ) -> dict:
-    """Multi-epoch replay-based HER REINFORCE update on the pointer decoder.
-
-    For each `replay_epoch`:
-      - walks the saved action sequence in chunks of `chunk_size`;
-      - each chunk recomputes logp(a_t) with the current policy, rebuilds the
-        per-step dyn / h_ctx, and runs one backward + step.
-    EMA baseline is updated ONCE per round (at the start of the first epoch),
-    so multi-epoch replay reuses the same advantage normalisation.
-    """
     if len(actions) == 0:
         return {"policy_loss": 0.0, "entropy": 0.0, "r_true": 0.0, "dense_mean": 0.0, "adv_mean": 0.0, "n_chunks": 0, "n_updates": 0}
 
@@ -510,11 +473,6 @@ def run_fold(args, fold_idx: int):
     tp_max = float(test_prox.max()) if test_prox.max() > 0 else 1.0
     test_prox_norm = test_prox / tp_max
 
-    #  per-patient quota cap (structural anti-collapse guard)
-    # rationale: without a cap the policy can collapse the whole round onto
-    # one patient's anchor slide and overfit its exact morphology, hurting
-    # adjacent val slices. we allow up to `patient_cap_multiplier x (patient's
-    # proportional share)` of the total budget per patient.
     patient_str_to_int = {
         p: i for i, p in enumerate(sorted(set(pool.patient_id)))
     }
@@ -602,14 +560,9 @@ def run_fold(args, fold_idx: int):
     round_log = []
     history_rows = []
 
-    #  round staging: we collect (logps, ents, picks, dense) at commit time,
-    # then close out the round with the true DeltaL_val after the next training
-    # segment finishes.
     pending_round: dict | None = None
     L_val_prev = None   # scalar val loss *before* this round's contribution
 
-    #  CV reward: split sampled spots into pseudo_train/pseudo_val
-    #    using deterministic hash so each spot always stays in the same group
     CV_SEED = 42
     CV_VAL_MOD = 5  # ~20% pseudo_val
 

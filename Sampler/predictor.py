@@ -47,12 +47,6 @@ def _make_model(output_dim: int, hidden_dim: int = 1024) -> nn.Module:
 
 
 class STNetPredictor:
-    """Predictor wrapper for active learning.
-
-    The candidate pool defines the order of training samples. fit_* methods
-    accept *global pool indices* (ints in [0, N_pool)) and use a Subset.
-    """
-
     def __init__(
         self,
         dataset: str,
@@ -66,10 +60,6 @@ class STNetPredictor:
         self.device = device
         self.batch_size = batch_size
         self.num_workers = num_workers
-
-        # All training samples in the *same order* as data_pool walks them.
-        # data_pool walks patients alphabetically and slides in slice_names
-        # order; here we replicate exactly that order so global indices match.
         from data_pool import THREEDMAP_ROOT  # local import to avoid cycle
         train_by_patient: Dict[str, List[str]] = {}
         for f in train_files:
@@ -112,10 +102,6 @@ class STNetPredictor:
                 num_workers=num_workers, pin_memory=True,
             )
 
-        # Fast val subset for RL training reward signal: a fixed random
-        # subsample of `rl_val_subsample` spots from the union of val slides.
-        # The full per-slide loaders above are still used for `eval_per_slide`
-        # so the final paper number is unchanged.
         self._rl_val_loader: DataLoader | None = None
 
         # build the RL-fast val subset once
@@ -225,10 +211,6 @@ class STNetPredictor:
     # 
     @torch.no_grad()
     def val_loss(self) -> float:
-        """Return scalar val loss. If a fast RL subset has been set up,
-        evaluate only on that subset; otherwise fall back to the full
-        per-slide val loaders.
-        """
         self.model.eval()
         total = 0.0
         n = 0
@@ -248,12 +230,6 @@ class STNetPredictor:
 
     @torch.no_grad()
     def eval_on_subset(self, sample_indices: List[int]) -> float:
-        """Evaluate model loss on a subset of the training pool (for CV reward).
-        Args:
-            sample_indices: global pool indices to evaluate on.
-        Returns:
-            scalar MSE loss on this subset.
-        """
         if len(sample_indices) == 0:
             return 0.0
         self.model.eval()
@@ -286,11 +262,6 @@ class STNetPredictor:
 
     @torch.no_grad()
     def cache_pool_features(self) -> tuple:
-        """Run the current backbone over the full train_dataset once.
-
-        Returns (feats, targets) where feats is (N_pool, 1024) and targets
-        is (N_pool, N_TARGET_GENES), both on self.device.
-        """
         self.model.eval()
         loader = DataLoader(
             self.train_dataset,

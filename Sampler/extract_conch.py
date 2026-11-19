@@ -1,9 +1,3 @@
-"""Extract CONCH ViT-B-16 features for every ST spot.
-
-Writes one npy per slide at
-    <DATA_ROOT>/conch_features/<dataset>/<patient>/<slide>_conch.npy
-aligned 1:1 with samples in <DATA_ROOT>/<dataset>/<patient>/<slide>.npy.
-"""
 import os, argparse
 from pathlib import Path
 import numpy as np

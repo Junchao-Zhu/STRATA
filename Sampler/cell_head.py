@@ -8,10 +8,6 @@ import numpy as np
 
 
 def nearest_centroid(X: torch.Tensor, centroids: torch.Tensor) -> torch.Tensor:
-    """Return the index of the nearest centroid (L2) for each row of X.
-
-    X: (m, d), centroids: (K, d).  Returns (m,) int64.
-    """
     # ||x - c||^2 = ||x||^2 - 2 x*c + ||c||^2
     x2 = (X * X).sum(1, keepdim=True)            # (m, 1)
     c2 = (centroids * centroids).sum(1)           # (K,)
@@ -60,11 +56,6 @@ class CellHead(nn.Module):
         bs: int = 128,
         lr: float | None = None,
     ) -> dict:
-        """Add (X_new, y_new) to the internal reservoir then train for `steps`
-        SGD steps on random mini-batches over the *entire accumulated* buffer.
-
-        Returns {'loss': last_loss, 'n_buffer': N_total, 'step_losses': [...]}.
-        """
         self._X_buf.append(X_new.detach())
         self._y_buf.append(y_new.detach())
         X_all = torch.cat(self._X_buf, dim=0)

@@ -25,14 +25,6 @@ class RewardModel(nn.Module):
 
 
 class RewardModelTrainer:
-    """Wraps a RewardModel with a buffer + training step.
-
-    Each entry in the buffer is a *window*: the per-step features of k
-    actions plus the single scalar R_true that resulted from those k picks.
-    The model is trained so that the SUM of its k predicted dense rewards
-    matches R_true (MSE).
-    """
-
     def __init__(self, in_dim: int, hidden: int = 128, lr: float = 1e-3, device: str = "cuda"):
         self.model = RewardModel(in_dim, hidden).to(device)
         self.opt = torch.optim.Adam(self.model.parameters(), lr=lr)
