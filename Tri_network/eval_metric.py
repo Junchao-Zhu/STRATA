@@ -31,4 +31,4 @@ def compute_metrics(pred, target):
     mae = np.mean(np.abs(pred_np - target_np))
     pcc = calculate_pcc(pred_t, target_t).item()
 
-    return {'mse': mse, 'mae': mae, 'pcc': pcc}
+    return {'mse': mse, 'pcc': pcc}
