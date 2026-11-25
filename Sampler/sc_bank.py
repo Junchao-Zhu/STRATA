@@ -1,9 +1,3 @@
-"""External single-cell reference bank.
-
-Loads (embedding, cell_type) pairs from a single-cell embedding directory,
-runs KMeans to define cluster centroids, and tracks coverage as spots are
-sampled. The bank reports how many new clusters each spot hits.
-"""
 from __future__ import annotations
 
 import os
