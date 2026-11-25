@@ -1,7 +1,7 @@
-# STRATA: Reinforcement-driven Active Sampling with Tri-paradigm Adaptation for 3D Spatial Transcriptomics
+# STRATA
 
 A reinforcement-driven sampling framework that reconstructs dense 3D
-tissue-level transcriptomic maps from a small set of strategically sampled
+tissue-level transcriptomic maps from a small set of sampled
 voxel-wise ST acquisitions. 
 
 ## Repository layout
