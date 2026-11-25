@@ -1,11 +1,3 @@
-"""
-Data loader for 3D gene expression prediction.
-
-Supports two modes:
-1. Standalone training: all training spots' expressions are available.
-2. Active sampling: only sampled spots have revealed expression, controlled
-   by a `sampled_set` of pool indices.
-"""
 import os
 import numpy as np
 from PIL import Image
