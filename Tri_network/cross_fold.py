@@ -1,24 +1,8 @@
-"""
-Cross-validation fold generation for 3D spatial transcriptomics.
 
-For each held-out case, the middle slice is moved to the training set as
-an anchor; the remaining slices form the validation set. File paths use
-the format "{case}/{slice}.npy".
-"""
-
-# Case to slice mapping (HER2 example).
 HER2_6LAYER = {
-    'Patient_A': ['SPA149', 'SPA150', 'SPA151', 'SPA152', 'SPA153', 'SPA154'],
-    'Patient_B': ['SPA143', 'SPA144', 'SPA145', 'SPA146', 'SPA147', 'SPA148'],
-    'Patient_C': ['SPA137', 'SPA138', 'SPA139', 'SPA140', 'SPA141', 'SPA142'],
-    'Patient_D': ['SPA131', 'SPA132', 'SPA133', 'SPA134', 'SPA135', 'SPA136'],
 }
 
 HER2_3LAYER = {
-    'Patient_E': ['SPA128', 'SPA129', 'SPA130'],
-    'Patient_F': ['SPA125', 'SPA126', 'SPA127'],
-    'Patient_G': ['SPA122', 'SPA123', 'SPA124'],
-    'Patient_H': ['SPA119', 'SPA120', 'SPA121'],
 }
 
 
