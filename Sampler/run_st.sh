@@ -6,7 +6,7 @@ PY=python
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 datasets=(HER2)
-total_ratios=(0.15 0.3 0.5 0.75)
+total_ratios=(0.1 0.3)
 gpus=(0)
 
 batch_size=128
