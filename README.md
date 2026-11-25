@@ -23,7 +23,7 @@ pip install -r requirements.txt
 # 2. Point env vars at your data, then train the triple-branch predictor
 bash Tri_network/run_train.sh
 
-# 3. Run active sampling on top
+# 3. Run sampling
 bash Sampler/run_st.sh
 ```
 
