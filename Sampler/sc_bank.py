@@ -6,9 +6,7 @@ from typing import Tuple
 
 import numpy as np
 
-# Each dataset points to a directory of single-cell embeddings.
 DEFAULT_SC_ROOTS = {
-    "HER2": os.environ.get("SC_BANK_HER2", "./data/sc_embeddings/her2"),
 }
 
 
